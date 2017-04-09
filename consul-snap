@@ -14,5 +14,11 @@ if [ "$commandoption" = "--help" ] && [ $# -gt 0 ]; then
   shift
 fi
 
-# start consul
-exec consul $commandoption $subcommand -data-dir $SNAP_USER_DATA/data -config-dir $SNAP_USER_DATA/config.d "$@"
+if [ "$commandoption" = "agent" ]
+then
+	# start consul
+	exec consul $commandoption $subcommand -data-dir $SNAP_USER_DATA/data -config-dir $SNAP_USER_DATA/config.d "$@"
+else
+	# only the 'agent' command needs -dir options
+	exec consul $commandoption $subcommand "$@"
+fi
