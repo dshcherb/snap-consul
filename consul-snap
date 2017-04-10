@@ -1,8 +1,11 @@
 #!/bin/sh
-# Wrapper to direct datadir and config dir to writable paths by default.
-# This is still overridable (only last argument is taken) by the command
-# line user entry.
-# Handle special cases like --help <subcommand>.
+
+# this is a wrapper used to provide default values for config-dir and data-dir
+# you can redefine those as golang's flag package parses flags in-order and
+# ignores the flags that have already been seen
+
+# note that the $SNAP_USER_DATA directory is created on the first invocation of
+# /snap/bin/<command> for a specific user by snapd (at the time of this commit)
 
 if [ $# -gt 0 ]; then
   commandoption="$1"
@@ -17,7 +20,7 @@ fi
 if [ "$commandoption" = "agent" ]
 then
 	# start consul
-	exec consul $commandoption $subcommand -data-dir $SNAP_USER_DATA/data -config-dir $SNAP_USER_DATA/config.d "$@"
+	exec consul $commandoption $subcommand "$@" -data-dir $SNAP_USER_DATA/data -config-dir $SNAP_USER_DATA/config.d
 else
 	# only the 'agent' command needs -dir options
 	exec consul $commandoption $subcommand "$@"
